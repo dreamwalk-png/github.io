@@ -19,7 +19,7 @@
   html,body{
     height:100%;margin:0;background:var(--bg);color:#e6eef3;
     font-family:var(--font-sans);-webkit-font-smoothing:antialiased;
-    overflow:hidden;               /* <-- keep the page from scrolling */
+    overflow:hidden;
   }
   .app{
     height:100vh;display:flex;position:relative;overflow:hidden;
@@ -30,19 +30,19 @@
   }
   svg.lines{
     position:absolute;inset:0;pointer-events:none;
-    z-index:1;                     /* <-- lines behind bubbles */
+    z-index:1;                     /* lines behind bubbles */
   }
   .hub{
     position:relative;width:min(1200px,92%);height:min(800px,86vh);
     max-width:1600px;border-radius:16px;
     background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);
     box-shadow:0 8px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.02);
-    overflow:hidden;
-    z-index:2;                     /* <-- hub (bubbles) above the bars */
+    overflow:visible;              /* allow sub-genres to escape the hub */
+    z-index:2;
   }
   .bubbles{
     position:absolute;inset:0;pointer-events:auto;
-    z-index:10;                    /* <-- bubbles on top */
+    z-index:10;                    /* bubbles on top */
   }
   .bubble{
     position:absolute;transform:translate(-50%,-50%);
@@ -158,7 +158,7 @@
     position:absolute;inset:0;pointer-events:none;
     background-image:radial-gradient(circle at center,rgba(255,255,255,0.02) 1px,transparent 1px);
     background-size:120px 120px;opacity:0.1;mix-blend-mode:screen;
-    z-index:0;                     /* <-- grid behind everything */
+    z-index:0;
   }
   #cursor-trail{
     position:fixed;width:12px;height:12px;
@@ -1283,4 +1283,5 @@ document.body.appendChild(el('div',{style:'position:absolute;left:-9999px;top:au
 </script>
 </body>
 </html>
+
 
