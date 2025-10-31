@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>GameMap – Interactive Genre Encyclopedia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore game genres on mobile and desktop.">
+  <style>
+    html,body{margin:0;padding:0;height:100%;background:#0b0b0c;color:#e6eef3;font-family:system-ui,-apple-system,sans-serif}
+    .loader{
+      height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+      font-size:1.1rem;opacity:0.9;
+    }
+    .loader h1{font-size:1.8rem;margin-bottom:.5rem;color:#6be6c1}
+    .dot{
+      width:8px;height:8px;background:#6be6c1;border-radius:50%;display:inline-block;
+      animation:pulse 1.5s infinite;margin-left:6px;
+    }
+    @keyframes pulse{
+      0%,100%{opacity:.4;transform:scale(.8)}
+      50%{opacity:1;transform:scale(1)}
+    }
+    iframe{border:none;width:100%;height:100%;position:fixed;top:0;left:0;}
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <h1>GameMap</h1>
+    <p>Loading best version for your device<span class="dot"></span></p>
+  </div>
+
+  <script>
+    // Detect mobile
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = isMobile ? 'gamemap-mobile.html' : 'gamemap-desktop.html';
+    iframe.loading = 'eager';
+    iframe.allowFullscreen = true;
+
+    // When loaded → remove loader
+    iframe.onload = () => {
+      document.body.innerHTML = '';
+      document.body.appendChild(iframe);
+    };
+
+    // If file missing → show error (prevents flashing)
+    iframe.onerror = () => {
+      document.body.innerHTML = `
+        <div class="loader">
+          <h1>Error</h1>
+          <p>Could not load ${isMobile ? 'mobile' : 'desktop'} version.<br>
+          File <code>${isMobile ? 'gamemap-mobile.html' : 'gamemap-desktop.html'}</code> is missing.</p>
+          <p><a href="." style="color:#6be6c1">Reload</a></p>
+        </div>`;
+    };
+
+    // Start loading
+    document.body.appendChild(iframe);
+  </script>
+</body>
+</html>
