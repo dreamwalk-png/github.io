@@ -16,261 +16,94 @@
     --sub-bubble-size: 76px;
     --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
-  html,body{height:100%;margin:0;background:var(--bg); color:#e6eef3; font-family:var(--font-sans); -webkit-font-smoothing:antialiased; overflow:hidden;}
-  .app{
-    height:100vh;
-    display:flex;
-    position:relative;
-    overflow:hidden;
+  html,body{height:100%;margin:0;background:var(--bg);color:#e6eef3;font-family:var(--font-sans);-webkit-font-smoothing:antialiased;overflow:hidden;}
+  .app{height:100vh;display:flex;position:relative;overflow:hidden;}
+  .map{flex:1;position:relative;min-width:0;display:flex;align-items:center;justify-content:center;}
+  svg.lines{position:absolute;inset:0;pointer-events:none;}
+  .hub{
+    position:relative;width:min(1200px,92%);height:min(800px,86vh);max-width:1600px;
+    border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);
+    box-shadow:0 8px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.02);overflow:hidden;
   }
-  /* Canvas area */
-  .map {
-    flex:1;
-    position:relative;
-    min-width:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  .bubbles{position:absolute;inset:0;pointer-events:auto;}
+  .bubble{
+    position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;
+    text-align:center;cursor:pointer;user-select:none;transition:all .28s cubic-bezier(.2,.9,.3,1);
+    will-change:transform;border-radius:999px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.08);
+    background:var(--bubble-bg,linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03)));
+    border:1px solid var(--bubble-border,rgba(255,255,255,0.1));padding:14px 16px;color:#fff;
+    font-weight:700;font-size:15px;letter-spacing:0.4px;text-shadow:0 1px 2px rgba(0,0,0,0.5);
+    min-width:80px;z-index:10;
   }
-  /* svg overlay for lines */
-  svg.lines {
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+  .bubble:focus{outline:none;box-shadow:0 12px 36px rgba(0,0,0,0.8),0 0 0 4px var(--accent,rgba(107,230,193,0.3));}
+  .main{width:var(--main-bubble-size);height:var(--main-bubble-size);font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;}
+  .sub{
+    width:var(--sub-bubble-size);height:var(--sub-bubble-size);font-size:12.5px;font-weight:700;
+    background:var(--sub-bg,rgba(255,255,255,0.1));border:1px solid var(--sub-border,rgba(255,255,255,0.15));
+    backdrop-filter:blur(12px);box-shadow:0 6px 16px rgba(0,0,0,0.6);
   }
-  /* central hub style */
-  .hub {
-    position:relative;
-    width:min(1200px, 92%);
-    height:min(800px, 86vh);
-    max-width:1600px;
-    border-radius:16px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    overflow:hidden;
+  .game-node{
+    background:rgba(15,23,32,0.85);padding:8px 12px;border-radius:14px;font-weight:600;
+    font-size:11.5px;color:#e0f2fe;max-width:160px;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(8px);
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);transition:all .2s ease;
   }
-  /* bubbles container */
-  .bubbles {
-    position:absolute;
-    inset:0;
-    pointer-events:auto;
-  }
-  .bubble {
-    position:absolute;
-    transform:translate(-50%,-50%);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    cursor:pointer;
-    user-select:none;
-    transition:all .28s cubic-bezier(.2,.9,.3,1);
-    will-change:transform;
-    border-radius:999px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
-    background: var(--bubble-bg, linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)));
-    border: 1px solid var(--bubble-border, rgba(255,255,255,0.1));
-    padding:14px 16px;
-    color: #fff;
-    font-weight:700;
-    font-size:15px;
-    letter-spacing:0.4px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    min-width: 80px;
-    z-index: 10;
-  }
-  .bubble:focus{outline:none; box-shadow: 0 12px 36px rgba(0,0,0,0.8), 0 0 0 4px var(--accent, rgba(107,230,193,0.3));}
-  .main {
-    width:var(--main-bubble-size);
-    height:var(--main-bubble-size);
-    font-size:16px;
-    font-weight:800;
-    text-transform:uppercase;
-    letter-spacing:1.2px;
-  }
-  .sub {
-    width:var(--sub-bubble-size);
-    height:var(--sub-bubble-size);
-    font-size:12.5px;
-    font-weight:700;
-    background: var(--sub-bg, rgba(255,255,255,0.1));
-    border: 1px solid var(--sub-border, rgba(255,255,255,0.15));
-    backdrop-filter: blur(12px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
-  }
-  .game-node {
-    background: rgba(15,23,32,0.85);
-    padding:8px 12px;
-    border-radius:14px;
-    font-weight:600;
-    font-size:11.5px;
-    color:#e0f2fe;
-    max-width:160px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    border:1px solid rgba(255,255,255,0.12);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    transition:all .2s ease;
-  }
-  .game-node:hover {
-    background: rgba(30,40,55,0.9);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
-  }
-  /* clicked / active */
-  .bubble.active{ 
-    transform: translate(-50%,-50%) scale(1.12); 
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 5px var(--accent, rgba(107,230,193,0.4));
-    z-index: 20;
-  }
-  .bubble.fade-out { 
-    opacity:0.3; 
-    transform: translate(-50%,-50%) scale(0.94); 
-    filter: blur(0.5px);
-  }
-  /* header */
-  .topbar {
-    position:absolute;
-    left:22px;
-    top:14px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    z-index:30;
-  }
-  .brand {
-    display:flex;
-    gap:10px;
-    align-items:center;
-    color:var(--accent);
-    font-weight:700;
-    letter-spacing:0.6px;
-    font-size:18px;
-    text-transform:uppercase;
-  }
+  .game-node:hover{background:rgba(30,40,55,0.9);transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.6);}
+  .bubble.active{transform:translate(-50%,-50%) scale(1.12);box-shadow:0 20px 50px rgba(0,0,0,0.8),0 0 0 5px var(--accent,rgba(107,230,193,0.4));z-index:20;}
+  .bubble.fade-out{opacity:0.3;transform:translate(-50%,-50%) scale(0.94);filter:blur(0.5px);}
+  .topbar{position:absolute;left:22px;top:14px;display:flex;align-items:center;gap:12px;z-index:30;}
+  .brand{display:flex;gap:10px;align-items:center;color:var(--accent);font-weight:700;letter-spacing:0.6px;font-size:18px;text-transform:uppercase;}
   .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent);}
-  /* side panel */
-  .panel {
-    width:360px;
-    max-width:92vw;
-    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border-left:1px solid rgba(255,255,255,0.03);
-    position:relative;
-    z-index:60;
-    padding:22px;
-    box-shadow: -10px 0 40px rgba(0,0,0,0.7);
-    transform:translateX(100%);
-    transition:transform .32s cubic-bezier(.2,.9,.3,1);
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    color:#cfe8e0;
+  .panel{
+    width:360px;max-width:92vw;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
+    border-left:1px solid rgba(255,255,255,0.03);position:relative;z-index:60;padding:22px;
+    box-shadow:-10px 0 40px rgba(0,0,0,0.7);transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.9,.3,1);
+    display:flex;flex-direction:column;gap:14px;color:#cfe8e0;
   }
-  .panel.open{ transform:translateX(0); }
-  .panel h2{ margin:0; font-size:21px; font-weight:800; color:#fff; }
-  .panel .meta{ color:var(--muted); font-size:13.5px; margin-top:4px; }
-  .panel p{ margin:0; color:#d7eef0; line-height:1.5; font-size:14.5px;}
-  .panel .close {
-    margin-left:auto;
-    background:transparent;
-    border:0;
-    color:var(--muted);
-    font-size:20px;
-    cursor:pointer;
-    width:36px;
-    height:36px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:50%;
-    transition:0.2s;
+  .panel.open{transform:translateX(0);}
+  .panel h2{margin:0;font-size:21px;font-weight:800;color:#fff;}
+  .panel .meta{color:var(--muted);font-size:13.5px;margin-top:4px;}
+  .panel p{margin:0;color:#d7eef0;line-height:1.5;font-size:14.5px;}
+  .panel .close{
+    margin-left:auto;background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer;
+    width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:.2s;
   }
-  .panel .close:hover {
-    background: rgba(255,255,255,0.1);
-    color:#fff;
-  }
+  .panel .close:hover{background:rgba(255,255,255,0.1);color:#fff;}
   .panel .games-list{
-    margin-top:10px;
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-    max-height:42vh;
-    overflow:auto;
-    padding-right:6px;
+    margin-top:10px;display:flex;flex-direction:column;gap:9px;max-height:42vh;overflow:auto;padding-right:6px;
   }
   .games-list button{
-    background: rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);
-    padding:10px 12px;
-    border-radius:12px;
-    color:#e6f7ef;
-    text-align:left;
-    cursor:pointer;
-    font-weight:600;
-    font-size:13.5px;
-    transition:all .2s ease;
-    backdrop-filter: blur(4px);
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:10px 12px;
+    border-radius:12px;color:#e6f7ef;text-align:left;cursor:pointer;font-weight:600;font-size:13.5px;
+    transition:all .2s ease;backdrop-filter:blur(4px);
   }
-  .games-list button:hover {
-    background: rgba(255,255,255,0.12);
-    border-color: var(--accent, #6be6c1);
-    transform: translateX(4px);
+  .games-list button:hover{
+    background:rgba(255,255,255,0.12);border-color:var(--accent,#6be6c1);transform:translateX(4px);
   }
-  /* info footer */
-  .hint {
-    position:absolute;
-    right:18px;
-    bottom:12px;
-    color:var(--muted);
-    font-size:13px;
-    z-index:20;
-    backdrop-filter: blur(8px);
-    padding:9px 12px;
-    border-radius:12px;
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.05);
-    font-weight:500;
+  .hint{
+    position:absolute;right:18px;bottom:12px;color:var(--muted);font-size:13px;z-index:20;
+    backdrop-filter:blur(8px);padding:9px 12px;border-radius:12px;background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.05);font-weight:500;
   }
-  /* small screens */
   @media (max-width:800px){
-    .panel{ position:fixed; right:0; top:0; bottom:0; width:86vw; padding:18px; }
-    .hub{ height:100vh; border-radius:0; }
-    .topbar{ left:12px; top:8px; }
+    .panel{position:fixed;right:0;top:0;bottom:0;width:86vw;padding:18px;}
+    .hub{height:100vh;border-radius:0;}
+    .topbar{left:12px;top:8px;}
   }
-  /* interactive hover */
-  .bubble:hover{ 
-    transform: translate(-50%,-50%) scale(1.08); 
-    box-shadow: 0 14px 36px rgba(0,0,0,0.75), 0 0 0 3px var(--accent, rgba(107,230,193,0.25));
+  .bubble:hover{
+    transform:translate(-50%,-50%) scale(1.08);
+    box-shadow:0 14px 36px rgba(0,0,0,0.75),0 0 0 3px var(--accent,rgba(107,230,193,0.25));
   }
-  /* subtle radial grid */
   .grid-overlay{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background-image:
-      radial-gradient(circle at center, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 120px 120px;
-    opacity:0.1;
-    mix-blend-mode:screen;
+    position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(circle at center,rgba(255,255,255,0.02) 1px,transparent 1px);
+    background-size:120px 120px;opacity:0.1;mix-blend-mode:screen;
   }
-
-  /* Cursor Trail */
-  #cursor-trail {
-    position: fixed;
-    width: 12px;
-    height: 12px;
-    background: radial-gradient(circle, var(--trail-color, #6be6c1) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    mix-blend-mode: screen;
+  #cursor-trail{
+    position:fixed;width:12px;height:12px;background:radial-gradient(circle,var(--trail-color,#6be6c1) 0%,transparent 70%);
+    border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:9999;opacity:0.7;
+    transition:opacity .3s ease;mix-blend-mode:screen;
   }
 </style>
 </head>
@@ -296,23 +129,430 @@
         <h2 id="panel-title">Welcome</h2>
         <div class="meta" id="panel-meta">Interactive encyclopedia of game genres</div>
       </div>
-      <button class="close" id="panel-close" aria-label="Close side panel">×</button>
+      <button class="close" id="panel-close" aria-label="Close side panel">x</button>
     </div>
-    <p id="panel-desc">Click any main genre or subgenre bubble to explore descriptions and iconic games.</p>
+    <p id="panel-desc">Click any main genre or sub-genre bubble to explore descriptions and iconic games.</p>
     <div style="font-size:13px;color:var(--muted);margin-top:8px;">Notable titles</div>
     <div class="games-list" id="panel-games" role="list"></div>
   </aside>
 </div>
 
-<!-- Cursor Trail Elements -->
 <div id="cursor-trail"></div>
 
 <script>
-/* ---------- DATA: modify this to control content ---------- */
-const GENRE_DATA = [ /* ... your full GENRE_DATA stays the same ... */ ];
-// (Same data as before — not repeated here for brevity, but keep it in your file)
+/* ---------- FULL DATA (unchanged from your original) ---------- */
+const GENRE_DATA = [
+  {
+    id: 'rpg',
+    name: 'RPG',
+    desc: 'Role-playing games emphasize character progression, narrative, and player choices. Subgenres vary from action-oriented to party-based tactics and online persistent worlds.',
+    subgenres: [
+      { id:'mmorpg', name:'MMORPG', desc:'Massively multiplayer RPGs with persistent worlds and social systems.', games:[
+        'World of Warcraft (2004) — The defining MMORPG that popularized subscription-based online worlds.',
+        'Final Fantasy XIV (2013) — A story-rich MMO that evolved from a failed launch into a critical darling.',
+        'Guild Wars 2 (2012) — Free-to-play MMORPG with dynamic events and no subscription.',
+        'The Elder Scrolls Online (2014) — Brings Skyrim’s world into a massive multiplayer format.',
+        'Black Desert Online (2015) — Known for stunning visuals and deep life skills.'
+      ] },
+      { id:'arpg', name:'Action RPG', desc:'Real-time combat and loot-driven progression.', games:[
+        'Diablo II (2000) — The gold standard for loot-driven hack-and-slash gameplay.',
+        'Diablo III (2012) — Streamlined sequel with seasonal content and fast-paced action.',
+        'Path of Exile (2013) — Free-to-play with unmatched build complexity and depth.',
+        'Torchlight II (2012) — Colorful, accessible ARPG with mod support.',
+        'Grim Dawn (2016) — Dark, gritty ARPG with dual-classing and deep crafting.'
+      ] },
+      { id:'jrpg', name:'JRPG', desc:'Narrative-driven RPGs often with turn-based combat and character ensembles.', games:[
+        'Chrono Trigger (1995) — Timeless classic with multiple endings and time travel.',
+        'Final Fantasy VII (1997) — Iconic 3D JRPG that defined a generation.',
+        'Persona 5 (2016) — Stylish social sim + turn-based combat with deep themes.',
+        'Dragon Quest XI (2017) — Traditional JRPG with beautiful art and epic scope.',
+        'Nier: Automata (2017) — Philosophical action-JRPG with genre-blending gameplay.'
+      ] },
+      { id:'roguelike', name:'Traditional Roguelike', desc:'Procedural generation, permadeath, grid-based movement, and high complexity.', games:[
+        'NetHack (1987) — The deepest and most unforgiving roguelike ever made.',
+        'Dungeon Crawl Stone Soup (2006) — Streamlined yet complex, community-driven.',
+        'Tales of Maj\'Eyal (2012) — Rich fantasy world with deep lore and classes.',
+        'Caves of Qud (2015) — Post-apocalyptic sci-fi roguelike with emergent storytelling.'
+      ] },
+      { id:'roguelite', name:'Roguelite', desc:'Roguelike-inspired with meta-progression and shorter runs.', games:[
+        'Hades (2020) — Narrative-driven roguelite with Greek mythology and tight combat.',
+        'Dead Cells (2018) — Fast-paced Metroidvania-roguelite hybrid.',
+        'Rogue Legacy 2 (2022) — Platformer roguelite with heir-based progression.',
+        'Slay the Spire (2019) — Deckbuilding roguelite that redefined the subgenre.',
+        'The Binding of Isaac: Rebirth (2014) — Dark, twisted twin-stick roguelite.'
+      ] },
+      { id:'soulslike', name:'Soulslike', desc:'High-difficulty, methodical combat with interconnected worlds and checkpoint systems.', games:[
+        'Dark Souls (2011) — The game that defined the genre with its punishing difficulty.',
+        'Bloodborne (2015) — Gothic horror Soulslike with aggressive combat.',
+        'Sekiro: Shadows Die Twice (2019) — Rhythm-based combat with verticality and stealth.',
+        'Elden Ring (2022) — Open-world Soulslike with vast exploration and freedom.',
+        'Lies of P (2023) — Pinocchio-inspired Soulslike with weapon crafting.'
+      ] },
+      { id:'wrpg', name:'Western RPG', desc:'Open-world or choice-heavy RPGs with player freedom and moral ambiguity.', games:[
+        'The Witcher 3: Wild Hunt (2015) — Epic narrative with meaningful choices.',
+        'Baldur\'s Gate 3 (2023) — D&D-based RPG with unparalleled reactivity.',
+        'Fallout: New Vegas (2010) — Post-apocalyptic RPG with faction politics.',
+        'Dragon Age: Origins (2009) — Party-based RPG with deep companion stories.'
+      ] },
+      { id:'tactical-rpg', name:'Tactical RPG', desc:'Grid-based combat with deep strategy and unit management.', games:[
+        'Fire Emblem: Three Houses (2019) — School sim + tactical battles.',
+        'XCOM 2 (2016) — Turn-based alien invasion strategy RPG.',
+        'Divinity: Original Sin 2 (2017) — Isometric RPG with environmental combat.',
+        'Triangle Strategy (2022) — Political narrative + grid combat.'
+      ] }
+    ],
+    games: [
+      'Skyrim (2011) — Open-world RPG defining player freedom in gaming.',
+      'Baldur\'s Gate 3 (2023) — Modern CRPG masterpiece with branching narratives.',
+      'The Witcher 3 (2015) — Cinematic storytelling in a living world.'
+    ]
+  },
+  {
+    id: 'shooter',
+    name: 'Shooter',
+    desc: 'Games centered on ranged combat. Focus ranges from fast arena FPS to tactical military simulators to last-man-standing battle royales.',
+    subgenres: [
+      { id:'fps', name:'First-Person Shooter (FPS)', desc:'Player sees through character eyes, emphasis on reflexes and aiming.', games:[
+        'Doom (1993) — The father of the modern FPS with fast-paced demon-slaying.',
+        'Half-Life 2 (2004) — Revolutionary physics and narrative integration.',
+        'Counter-Strike: Global Offensive (2012) — Competitive tactical shooter.',
+        'Call of Duty 4: Modern Warfare (2007) — Defined modern military shooters.',
+        'Overwatch 2 (2022) — Hero-based team shooter with vibrant characters.'
+      ] },
+      { id:'tps', name:'Third-Person Shooter (TPS)', desc:'Camera outside the player; often combined with cover mechanics.', games:[
+        'Gears of War (2006) — Introduced active reload and cover-based combat.',
+        'The Division 2 (2019) — Looter-shooter with tactical squad play.',
+        'Max Payne (2001) — Bullet-time slow-motion shooting pioneer.',
+        'Remnant 2 (2023) — Soulslike co-op shooter with procedural worlds.',
+        'Control (2019) — Supernatural shooter with telekinetic powers.'
+      ] },
+      { id:'br', name:'Battle Royale', desc:'Large player counts fight until one remains; often includes looting and shrinking zones.', games:[
+        'Fortnite (2017) — Cultural phenomenon with building and pop culture crossovers.',
+        'PUBG (2017) — The original battle royale with realistic gunplay.',
+        'Apex Legends (2019) — Hero-based BR with fluid movement and pings.',
+        'Warzone (2020) — CoD’s take on BR with large-scale battles.',
+        'Fall Guys (2020) — Whimsical party-style battle royale.'
+      ] },
+      { id:'hero', name:'Hero Shooter', desc:'Objective-focused shooters with distinct heroes/abilities.', games:[
+        'Overwatch (2016) — Team-based hero shooter with diverse roles.',
+        'Team Fortress 2 (2007) — Class-based multiplayer shooter with humor.',
+        'Valorant (2020) — Tactical hero shooter with precise gunplay.',
+        'Paladins (2018) — Free-to-play hero shooter with card-based loadouts.'
+      ] },
+      { id:'boomer', name:'Boomer Shooter', desc:'Retro-style fast-paced FPS inspired by 90s classics.', games:[
+        'DOOM Eternal (2020) — High-octane demon-slaying with glory kills.',
+        'Ultrakill (2021) — Stylish, movement-heavy retro FPS.',
+        'Dusk (2018) — Low-poly horror FPS with speed and style.',
+        'Prodeus (2022) — Modern take on classic FPS aesthetics.'
+      ] },
+      { id:'looter', name:'Looter Shooter', desc:'Shooters focused on grinding for randomized gear.', games:[
+        'Borderlands 2 (2012) — Humor-filled looter shooter with billions of guns.',
+        'Destiny 2 (2017) — MMO-lite shooter with planetary exploration.',
+        'Warframe (2013) — Free-to-play ninja space looter with fluid movement.'
+      ] }
+    ],
+    games: [
+      'Half-Life (1998) — Pioneered storytelling in FPS genre.',
+      'BioShock (2007) — Immersive sim shooter with philosophical themes.'
+    ]
+  },
+  {
+    id: 'strategy',
+    name: 'Strategy',
+    desc: 'Emphasis on planning, economy, and tactical/strategic decisions. Play ranges from real-time to turn-based.',
+    subgenres: [
+      { id:'rts', name:'RTS', desc:'Real-time strategy with base-building and unit control.', games:[
+        'StarCraft II (2010) — The pinnacle of competitive RTS esports.',
+        'Age of Empires II (1999) — Historical RTS with deep campaign modes.',
+        'Command & Conquer: Red Alert 2 (2000) — Campy Cold War RTS.',
+        'Warcraft III (2002) — RTS with hero units and custom maps.',
+        'Company of Heroes (2006) — WWII RTS with destructible environments.'
+      ] },
+      { id:'tbs', name:'Turn-Based Strategy', desc:'Turn-based play, often more methodical and party-based.', games:[
+        'Civilization VI (2016) — Turn-based empire building across ages.',
+        'XCOM 2 (2016) — Tactical alien resistance with permadeath.',
+        'Heroes of Might & Magic III (1999) — Fantasy turn-based strategy classic.',
+        'Into the Breach (2018) — Puzzle-like mech strategy with time travel.'
+      ] },
+      { id:'4x', name:'4X', desc:'Explore, Expand, Exploit, Exterminate — grand strategy and empire-building.', games:[
+        'Civilization VI (2016) — The 4X genre benchmark.',
+        'Stellaris (2016) — Space 4X with emergent storytelling.',
+        'Endless Legend (2014) — Fantasy 4X with unique factions.',
+        'Old World (2021) — Historical 4X with family dynasty mechanics.'
+      ] },
+      { id:'moba', name:'MOBA', desc:'Team-based lanes, character progression within a match.', games:[
+        'League of Legends (2009) — The most popular competitive MOBA.',
+        'Dota 2 (2013) — Complex MOBA with high skill ceiling.',
+        'Smite (2014) — Third-person MOBA with gods from mythology.',
+        'Heroes of the Storm (2015) — Blizzard’s streamlined MOBA.'
+      ] },
+      { id:'grand', name:'Grand Strategy', desc:'Nation-level strategy over centuries with diplomacy and war.', games:[
+        'Crusader Kings III (2020) — Medieval dynasty simulator with intrigue.',
+        'Europa Universalis IV (2013) — Historical nation management.',
+        'Hearts of Iron IV (2016) — WWII grand strategy with supply lines.',
+        'Victoria 3 (2022) — Industrial-era economy and politics simulator.'
+      ] },
+      { id:'tower', name:'Tower Defense', desc:'Build defenses to stop waves of enemies.', games:[
+        'Bloons TD 6 (2018) — Addictive monkey-based tower defense.',
+        'Plants vs. Zombies (2009) — Casual tower defense with charm.',
+        'Dungeon Defenders (2011) — Action tower defense with RPG elements.'
+      ] }
+    ],
+    games: [
+      'Total War: Warhammer III (2022) — Combines grand strategy with real-time battles.',
+      'Crusader Kings III (2020) — Medieval life sim with deep political intrigue.'
+    ]
+  },
+  {
+    id: 'adventure',
+    name: 'Adventure',
+    desc: 'Player-driven exploration and narrative, puzzles and environmental storytelling are common.',
+    subgenres: [
+      { id:'pointclick', name:'Point & Click', desc:'Puzzle- and dialogue-driven adventures with inventory mechanics.', games:[
+        'The Secret of Monkey Island (1990) — Comedy adventure classic.',
+        'Grim Fandango (1998) — Noir adventure in the Land of the Dead.',
+        'Broken Sword (1996) — Hand-drawn adventure with global mystery.',
+        'Thimbleweed Park (2017) — Retro-style adventure by Ron Gilbert.',
+        'Return to Monkey Island (2022) — Long-awaited sequel with modern twists.'
+      ] },
+      { id:'walking', name:'Walking Simulator', desc:'Exploration-heavy narrative experiences with minimal mechanics.', games:[
+        'Firewatch (2016) — Emotional story in Wyoming wilderness.',
+        'What Remains of Edith Finch (2017) — Anthology of family stories.',
+        'Gone Home (2013) — Pioneered the narrative exploration genre.',
+        'Dear Esther (2012) — Poetic walking sim with ambient storytelling.'
+      ] },
+      { id:'survival', name:'Survival', desc:'Resource management and environmental threats.', games:[
+        'Subnautica (2018) — Underwater survival with alien mysteries.',
+        'The Long Dark (2017) — Cold wilderness survival simulation.',
+        'Don\'t Starve (2013) — Stylized survival with Tim Burton aesthetic.',
+        'Rust (2013) — Multiplayer survival with base-building and PvP.'
+      ] },
+      { id:'narrative', name:'Narrative Adventure', desc:'Story-focused games with light interactivity.', games:[
+        'Life is Strange (2015) — Time-rewind emotional drama.',
+        'The Walking Dead (2012) — Choice-driven zombie apocalypse story.',
+        'Detroit: Become Human (2018) — Branching sci-fi narrative.',
+        'Oxenfree (2016) — Supernatural teen dialogue adventure.'
+      ] },
+      { id:'text', name:'Text Adventure', desc:'Interactive fiction driven by parser or choice-based input.', games:[
+        'Zork (1980) — Classic text adventure with witty parser.',
+        '80 Days (2014) — Steampunk interactive fiction around the world.',
+        'Sorcery! (2013) — Choice-based fantasy epic with map travel.'
+      ] }
+    ],
+    games: [
+      'Tomb Raider (2013) — Rebooted cinematic action-adventure.',
+      'The Walking Dead: Season 1 (2012) — Emotional choice-driven storytelling.'
+    ]
+  },
+  {
+    id: 'platformer',
+    name: 'Platformer',
+    desc: 'Games with jumping/precision movement; range from classic 2D to 3D platformers.',
+    subgenres: [
+      { id:'metroidvania', name:'Metroidvania', desc:'Exploration-focused platformers with ability-based progression.', games:[
+        'Hollow Knight (2017) — Dark, vast world with challenging combat.',
+        'Ori and the Will of the Wisps (2020) — Emotional platformer with fluid movement.',
+        'Castlevania: Symphony of the Night (1997) — Genre-defining classic.',
+        'Blasphemous (2019) — Gothic pixel art with brutal difficulty.',
+        'Axiom Verge (2015) — Sci-fi Metroidvania with glitch powers.'
+      ] },
+      { id:'2d', name:'2D Platformer', desc:'Classic side-scrolling action and precision.', games:[
+        'Celeste (2018) — Precision platformer with mental health themes.',
+        'Super Meat Boy (2010) — Brutally hard platforming with tight controls.',
+        'Shovel Knight (2014) — Retro-style with modern design.',
+        'Cuphead (2017) — Run-and-gun with 1930s cartoon art.'
+      ] },
+      { id:'3d', name:'3D Platformer', desc:'Larger environments and more open movement.', games:[
+        'Super Mario 64 (1996) — Pioneered 3D platforming movement.',
+        'Banjo-Kazooie (1998) — Collectathon with humor and charm.',
+        'Crash Bandicoot (1996) — Linear 3D platforming with attitude.',
+        'Spyro the Dragon (1998) — Open 3D worlds with dragon flight.',
+        'A Hat in Time (2017) — Spiritual successor to N64 classics.'
+      ] },
+      { id:'precision', name:'Precision Platformer', desc:'Extremely challenging platforming with pixel-perfect jumps.', games:[
+        'N++ (2015) — Minimalist ninja platformer with thousands of levels.',
+        'VVVVVV (2010) — Gravity-flipping retro platformer.',
+        'I Wanna Be the Guy (2007) — Notoriously difficult parody platformer.'
+      ] }
+    ],
+    games: [
+      'Mega Man 2 (1988) — Iconic NES action-platformer.',
+      'Rayman Legends (2013) — Fluid, musical platforming adventure.'
+    ]
+  },
+  {
+    id: 'fighting',
+    name: 'Fighting',
+    desc: 'One-on-one or team combat with combos, frames, and inputs. Focus on skill and matchup knowledge.',
+    subgenres: [
+      { id:'2d-fighter', name:'2D Fighting', desc:'Traditional arena fighters with 2D plane combat.', games:[
+        'Street Fighter II (1991) — The fighting game that started it all.',
+        'Mortal Kombat 11 (2019) — Gory fighter with cinematic story mode.',
+        'Guilty Gear Strive (2021) — Anime fighter with heavy metal aesthetic.',
+        'The King of Fighters XV (2022) — Team-based 2D fighter with legacy.',
+        'BlazBlue: Central Fiction (2016) — Story-heavy anime fighter.'
+      ] },
+      { id:'3d-fighter', name:'3D Fighting', desc:'Combat with full 3D movement and arenas.', games:[
+        'Tekken 8 (2024) — 3D fighter with deep mechanics and heat system.',
+        'Soulcalibur VI (2018) — Weapon-based 3D fighter with guest characters.',
+        'Virtua Fighter 5 (2006) — Technical 3D fighter with realistic animation.',
+        'Dead or Alive 6 (2019) — Counter-heavy 3D fighter with dynamic stages.'
+      ] },
+      { id:'smash', name:'Platform Fighter', desc:'Party-style fighters with items and stage hazards.', games:[
+        'Super Smash Bros. Ultimate (2018) — Everyone is here — massive roster.',
+        'Brawlhalla (2017) — Free-to-play platform fighter with crossovers.',
+        'Rivals of Aether (2017) — Indie platform fighter with elemental characters.'
+      ] }
+    ],
+    games: [
+      'Super Smash Bros. Ultimate (2018) — The ultimate crossover fighting game.',
+      'King of Fighters \'98 (1998) — Dream match of classic characters.'
+    ]
+  },
+  {
+    id: 'sim',
+    name: 'Simulation',
+    name_alt: 'Sim',
+    desc: 'Games that simulate real-world activities or systems, from flight to social sims.',
+    subgenres: [
+      { id:'flight', name:'Flight Sim', desc:'Realistic aircraft and flight systems.', games:[
+        'Microsoft Flight Simulator (2020) — Photorealistic Earth with real weather.',
+        'X-Plane 12 (2023) — Highly accurate flight physics and systems.',
+        'DCS World (2008) — Military combat flight simulator with modules.',
+        'IL-2 Sturmovik (2001) — WWII flight combat with historical accuracy.'
+      ] },
+      { id:'life', name:'Life Sim', desc:'Social systems, routines, and emergent stories.', games:[
+        'The Sims 4 (2014) — Life simulation with endless customization.',
+        'Stardew Valley (2016) — Farming sim with relationships and secrets.',
+        'Animal Crossing: New Horizons (2020) — Relaxed island life sim.',
+        'Two Point Hospital (2018) — Humorous hospital management sim.'
+      ] },
+      { id:'racing', name:'Racing', desc:'Vehicle control and competition.', games:[
+        'Forza Horizon 5 (2021) — Open-world arcade racing in Mexico.',
+        'Gran Turismo 7 (2022) — Realistic racing with car culture focus.',
+        'Mario Kart 8 Deluxe (2017) — Fun, chaotic kart racing with items.',
+        'F1 24 (2024) — Official Formula 1 racing simulation.'
+      ] },
+      { id:'management', name:'Management Sim', desc:'Run businesses, cities, or teams with systems and growth.', games:[
+        'Cities: Skylines (2015) — Deep city-building with traffic simulation.',
+        'Planet Zoo (2019) — Zoo management with animal welfare.',
+        'Football Manager 2024 (2023) — The ultimate soccer management sim.',
+        'RollerCoaster Tycoon (1999) — Classic theme park tycoon.'
+      ] },
+      { id:'vehicle', name:'Vehicle Sim', desc:'Operate trains, trucks, or spaceships with realism.', games:[
+        'Euro Truck Simulator 2 (2012) — Relaxing long-haul trucking.',
+        'Farming Simulator 22 (2021) — Agricultural machinery simulation.',
+        'Train Sim World 4 (2023) — Realistic train driving experience.'
+      ] }
+    ],
+    games: [
+      'Kerbal Space Program (2015) — Build and fly rockets with real physics.',
+      'Euro Truck Simulator 2 (2012) — Zen-like trucking across Europe.'
+    ]
+  },
+  {
+    id: 'puzzle',
+    name: 'Puzzle',
+    desc: 'Problem-solving and logic-based challenges, often with high design variety.',
+    subgenres: [
+      { id:'match3', name:'Match-3 / Casual', desc:'Tile-matching mechanics and progression.', games:[
+        'Candy Crush Saga (2012) — The king of mobile match-3 games.',
+        'Bejeweled 3 (2010) — Classic gem-matching with multiple modes.',
+        'Puzzle Quest (2007) — Match-3 meets RPG combat.',
+        'Puzzledorf (2021) — Sokoban-inspired block puzzles.'
+      ] },
+      { id:'physics', name:'Physics Puzzle', desc:'Use physics interactions to solve puzzles.', games:[
+        'Portal 2 (2011) — Portal gun puzzles with co-op and humor.',
+        'World of Goo (2008) — Bridge-building with goo physics.',
+        'The Talos Principle (2014) — Philosophical puzzles with lasers.',
+        'Human: Fall Flat (2016) — Wobbly physics-based platform puzzles.'
+      ] },
+      { id:'escape', name:'Escape Room', desc:'Solve interconnected puzzles to escape a location.', games:[
+        'The Room (2012) — Intricate mechanical puzzle boxes.',
+        'Escape Simulator (2021) — Multiplayer escape rooms with editor.',
+        'We Were Here (2017) — Co-op escape puzzles with communication.'
+      ] },
+      { id:'sokoban', name:'Sokoban', desc:'Push blocks to goals in constrained spaces.', games:[
+        'Baba Is You (2019) — Rules are part of the puzzle.',
+        'Stephen\'s Sausage Roll (2016) — Brutally clever block-pushing.',
+        'A Monster\'s Expedition (2020) — Whimsical island-hopping puzzles.'
+      ] }
+    ],
+    games: [
+      'Tetris (1984) — The ultimate falling block puzzle.',
+      'Baba Is You (2019) — You make the rules — literally.'
+    ]
+  },
+  {
+    id: 'horror',
+    name: 'Horror',
+    desc: 'Designed to evoke fear, tension and dread. Mechanics can include limited resources, stealth, and psychological effects.',
+    subgenres: [
+      { id:'survival-horror', name:'Survival Horror', desc:'Limited resources + survival tension.', games:[
+        'Resident Evil 4 (2005) — Action-horror with over-the-shoulder camera.',
+        'Silent Hill 2 (2001) — Psychological horror masterpiece.',
+        'Dead Space (2008) — Sci-fi horror with dismemberment mechanics.',
+        'Amnesia: The Dark Descent (2010) — Helplessness and sanity system.',
+        'Outlast (2013) — Run-and-hide horror with camcorder night vision.'
+      ] },
+      { id:'psychological', name:'Psychological Horror', desc:'Atmosphere and narrative-driven scares.', games:[
+        'P.T. (2014) — Playable teaser that became a horror legend.',
+        'Layers of Fear (2016) — Painter descends into madness.',
+        'Soma (2015) — Existential sci-fi horror underwater.',
+        'Visage (2020) — P.T.-inspired haunted house exploration.'
+      ] },
+      { id:'action-horror', name:'Action Horror', desc:'Horror with heavy combat and spectacle.', games:[
+        'Doom 3 (2004) — Dark, flashlight-based demon shooting.',
+        'F.E.A.R. (2005) — FPS horror with slow-motion and AI.',
+        'The Evil Within (2014) — Survival horror by Shinji Mikami.'
+      ] },
+      { id:'analog', name:'Analog Horror', desc:'VHS-found footage style with meta-narrative.', games:[
+        'Iron Lung (2022) — Claustrophobic submersible exploration.',
+        'Stories Untold (2017) — Episodic text-adventure horror.',
+        'Inscryption (2021) — Card game with creeping horror.'
+      ] }
+    ],
+    games: [
+      'Outlast (2013) — Pure tension with no combat — only running.',
+      'Alien: Isolation (2014) — One perfect xenomorph AI in space.'
+    ]
+  },
+  {
+    id: 'sports',
+    name: 'Sports',
+    desc: 'Simulations or arcade representations of real-world sports and competitive activities.',
+    subgenres: [
+      { id:'team', name:'Team Sports', desc:'Football, basketball and other team-based sports sims.', games:[
+        'FIFA 23 (2022) — Official soccer with clubs and national teams.',
+        'NBA 2K24 (2023) — Basketball sim with deep career modes.',
+        'Madden NFL 24 (2023) — American football with realistic plays.',
+        'NHL 24 (2023) — Ice hockey with improved checking physics.'
+      ] },
+      { id:'extreme', name:'Extreme Sports', desc:'Skateboarding, snowboarding and extreme competitions.', games:[
+        'Tony Hawk\'s Pro Skater 1+2 (2020) — Remastered skate classics.',
+        'SSX Tricky (2001) — Over-the-top snowboarding with uber tricks.',
+        'Skate 3 (2010) — Realistic skateboarding with physics.',
+        'Steep (2016) — Open-world extreme winter sports.'
+      ] },
+      { id:'racing-sports', name:'Motorsports', desc:'Formula 1, rally, and motorcycle racing.', games:[
+        'F1 24 (2024) — Official F1 with driver career mode.',
+        'MotoGP 24 (2024) — Motorcycle racing with lean physics.',
+        'Dirt Rally 2.0 (2019) — Realistic off-road rally simulation.'
+      ] },
+      { id:'arcade-sports', name:'Arcade Sports', desc:'Fun, exaggerated sports with power-ups.', games:[
+        'Rocket League (2015) — Soccer with rocket-powered cars.',
+        'Windjammers (1994) — Frisbee tennis with super moves.',
+        'Nintendo Switch Sports (2022) — Motion-controlled party sports.'
+      ] }
+    ],
+    games: [
+      'Madden NFL 25 (2024) — Annual football simulation.',
+      'F1 2024 (2024) — Cutting-edge Formula 1 racing.'
+    ]
+  }
+];
 
-/* ---------- GENRE COLORS ---------- */
+/* ---------- GENRE ACCENT COLOURS ---------- */
 const GENRE_COLORS = {
   'rpg': '#e91e63',
   'shooter': '#ff5722',
@@ -326,7 +566,7 @@ const GENRE_COLORS = {
   'sports': '#ff9800'
 };
 
-/* Utility helpers */
+/* ---------- UTILS ---------- */
 function el(tag, attrs={}, children=[]){
   const d = document.createElement(tag);
   for(const k in attrs){
@@ -337,34 +577,23 @@ function el(tag, attrs={}, children=[]){
   (Array.isArray(children)?children:[children]).forEach(c=>{ if(!c) return; if(typeof c === 'string') d.appendChild(document.createTextNode(c)); else d.appendChild(c);});
   return d;
 }
-
-/* Cursor Trail */
-const trail = document.getElementById('cursor-trail');
-const trailHistory = [];
-const maxTrail = 12;
-let mouseX = 0, mouseY = 0;
-
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  trailHistory.push({ x: mouseX, y: mouseY });
-  if (trailHistory.length > maxTrail) trailHistory.shift();
-});
-
-function updateTrail() {
-  if (trailHistory.length > 0) {
-    const last = trailHistory[trailHistory.length - 1];
-    trail.style.left = last.x + 'px';
-    trail.style.top = last.y + 'px';
-    trail.style.opacity = '0.8';
-  }
-  requestAnimationFrame(updateTrail);
+function hexToRGBA(hex, a){
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
 }
-updateTrail();
 
-/* Main rendering & interactions */
+/* ---------- CURSOR TRAIL ---------- */
+const trail = document.getElementById('cursor-trail');
+const history = [];
+const max = 12;
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; history.push({x:mx,y:my}); if(history.length>max) history.shift(); });
+function update(){ if(history.length){ const p=history[history.length-1]; trail.style.left=p.x+'px'; trail.style.top=p.y+'px'; trail.style.opacity='0.8'; } requestAnimationFrame(update); }
+update();
+
+/* ---------- DOM REFERENCES ---------- */
 const hub = document.getElementById('hub');
-const bubblesContainer = document.getElementById('bubbles');
+const bubbles = document.getElementById('bubbles');
 const svg = document.getElementById('svg-lines');
 const panel = document.getElementById('panel');
 const panelTitle = document.getElementById('panel-title');
@@ -372,269 +601,198 @@ const panelMeta = document.getElementById('panel-meta');
 const panelDesc = document.getElementById('panel-desc');
 const panelGames = document.getElementById('panel-games');
 const panelClose = document.getElementById('panel-close');
-let activeMainId = null;
-let activeSubId = null;
-let nodes = {};
+let activeMain = null, activeSub = null, nodes = {};
 
+/* ---------- LAYOUT ---------- */
 function hubRect(){ return hub.getBoundingClientRect(); }
-
-function layoutMainBubbles(){
-  bubblesContainer.innerHTML = '';
-  svg.innerHTML = '';
-  nodes = {};
-  const center = { x: hubRect().width/2, y: hubRect().height/2 + 10 };
-  const radius = Math.min(hubRect().width, hubRect().height) * 0.33;
-  const count = GENRE_DATA.length;
-  for(let i=0;i<count;i++){
-    const g = GENRE_DATA[i];
-    const angle = (i / count) * Math.PI * 2 - Math.PI/2;
-    const x = center.x + Math.cos(angle)*radius;
-    const y = center.y + Math.sin(angle)*radius * 0.95;
-    
-    const accent = GENRE_COLORS[g.id] || '#6be6c1';
-    const node = el('button', { 
-      class:'bubble main', 
-      'data-id':g.id, 
-      'aria-label': g.name, 
-      tabindex:0,
-      style: `--accent:${accent}; --bubble-bg:linear-gradient(135deg, ${hexToRGBA(accent,0.15)}, ${hexToRGBA(accent,0.05)}); --bubble-border:rgba(255,255,255,0.15);`
+function layoutMain(){
+  bubbles.innerHTML=''; svg.innerHTML=''; nodes={};
+  const c = {x:hubRect().width/2, y:hubRect().height/2+10};
+  const r = Math.min(hubRect().width, hubRect().height)*0.33;
+  GENRE_DATA.forEach((g,i)=>{
+    const a = (i/GENRE_DATA.length)*Math.PI*2 - Math.PI/2;
+    const x = c.x + Math.cos(a)*r;
+    const y = c.y + Math.sin(a)*r*0.95;
+    const accent = GENRE_COLORS[g.id]||'#6be6c1';
+    const btn = el('button',{
+      class:'bubble main', 'data-id':g.id, 'aria-label':g.name, tabindex:0,
+      style:`--accent:${accent};--bubble-bg:linear-gradient(135deg,${hexToRGBA(accent,0.15)},${hexToRGBA(accent,0.05)});--bubble-border:rgba(255,255,255,0.15);`
     });
-    node.innerHTML = `<div style="padding:6px">${g.name}</div>`;
-    node.style.left = x + 'px';
-    node.style.top = y + 'px';
-    bubblesContainer.appendChild(node);
-    nodes[g.id] = { x, y, el: node, data: g, accent };
-    
-    node.addEventListener('click', ()=> onMainClick(g.id));
-    node.addEventListener('keydown', (ev)=> { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onMainClick(g.id); }});
-  }
+    btn.innerHTML=`<div style="padding:6px">${g.name}</div>`;
+    btn.style.left=x+'px'; btn.style.top=y+'px';
+    bubbles.appendChild(btn);
+    nodes[g.id]={x,y,el:btn,data:g,accent};
+    btn.onclick = ()=>onMain(g.id);
+    btn.onkeydown = e=>{ if(e.key==='Enter'||e.key===' ') {e.preventDefault(); onMain(g.id);} };
+  });
 }
 
-function hexToRGBA(hex, alpha) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-function drawLine(a,b,opts={}){
-  const line = document.createElementNS("http://www.w3.org/2000/svg","path");
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const mx = a.x + dx*0.45;
-  const my = a.y + dy*0.45;
-  const d = `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`;
-  line.setAttribute('d', d);
-  line.setAttribute('stroke', opts.stroke || 'rgba(255,255,255,0.12)');
-  line.setAttribute('stroke-width', opts.width || 1.3);
-  line.setAttribute('fill','none');
-  line.setAttribute('stroke-linecap','round');
-  line.setAttribute('opacity', opts.opacity || 0.9);
-  line.setAttribute('filter', 'url(#glow)');
-  svg.appendChild(line);
-  return line;
-}
-
-// Add glow filter
-const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-filter.id = "glow";
-filter.innerHTML = `<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+/* ---------- SVG GLOW FILTER ---------- */
+const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+const filter = document.createElementNS('http://www.w3.org/2000/svg','filter');
+filter.id='glow';
+filter.innerHTML=`<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
 <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>`;
 defs.appendChild(filter);
 svg.appendChild(defs);
 
-function onMainClick(id){
-  const clicked = nodes[id];
-  if(!clicked) return;
-  if(activeMainId === id){
-    closeSubgenres();
-    return;
-  }
-  activeMainId = id;
-  activeSubId = null;
-  for(const k in nodes){
-    nodes[k].el.classList.toggle('active', k===id);
-    nodes[k].el.classList.toggle('fade-out', k!==id);
-  }
-  svg.innerHTML = ''; svg.appendChild(defs);
-  removeSubsAndGames();
-  renderSubgenres(clicked);
-  renderGameNodes(clicked);
-  openPanelFor(clicked.data);
-  trail.style.setProperty('--trail-color', clicked.accent);
+/* ---------- LINE DRAWING ---------- */
+function line(a,b,o={}){
+  const l = document.createElementNS('http://www.w3.org/2000/svg','path');
+  const dx=b.x-a.x, dy=b.y-a.y, mx=a.x+dx*0.45, my=a.y+dy*0.45;
+  l.setAttribute('d',`M${a.x} ${a.y} C${mx} ${a.y},${mx} ${b.y},${b.x} ${b.y}`);
+  l.setAttribute('stroke',o.stroke||'rgba(255,255,255,0.12)');
+  l.setAttribute('stroke-width',o.width||1.3);
+  l.setAttribute('fill','none'); l.setAttribute('stroke-linecap','round');
+  l.setAttribute('opacity',o.opacity||0.9);
+  l.setAttribute('filter','url(#glow)');
+  svg.appendChild(l);
+  return l;
 }
 
-function removeSubsAndGames(){
-  const toRemove = [...bubblesContainer.querySelectorAll('.sub, .game-node')];
-  toRemove.forEach(n=> n.remove());
+/* ---------- INTERACTION ---------- */
+function onMain(id){
+  const n = nodes[id];
+  if(!n) return;
+  if(activeMain===id){ closeAll(); return; }
+  activeMain=id; activeSub=null;
+  Object.values(nodes).forEach(v=>{ v.el.classList.toggle('active',v===n); v.el.classList.toggle('fade-out',v!==n); });
+  svg.innerHTML=''; svg.appendChild(defs);
+  removeSubsGames();
+  renderSubs(n); renderGames(n);
+  openPanel(n.data);
+  trail.style.setProperty('--trail-color',n.accent);
 }
-
-function closeSubgenres(){
-  activeMainId = null;
-  activeSubId = null;
-  for(const k in nodes){
-    nodes[k].el.classList.remove('active','fade-out');
-  }
-  svg.innerHTML = ''; svg.appendChild(defs);
-  removeSubsAndGames();
-  closePanel();
-  trail.style.opacity = '0.7';
+function removeSubsGames(){ document.querySelectorAll('.sub,.game-node').forEach(e=>e.remove()); }
+function closeAll(){
+  activeMain=activeSub=null;
+  Object.values(nodes).forEach(v=>v.el.classList.remove('active','fade-out'));
+  svg.innerHTML=''; svg.appendChild(defs);
+  removeSubsGames(); closePanel();
 }
-
-function renderSubgenres(mainNode){
-  const sublist = mainNode.data.subgenres || [];
-  if(!sublist.length) return;
-  const angleStart = -Math.PI/2;
-  const spread = Math.PI * 1.6;
-  const center = { x: mainNode.x, y: mainNode.y };
-  const radius = 150;
-  const baseIndex = GENRE_DATA.findIndex(g=>g.id === mainNode.data.id);
-  const mainAngle = (baseIndex / GENRE_DATA.length) * Math.PI * 2 - Math.PI/2;
-  const fanCenterAngle = mainAngle;
-  const count = sublist.length;
-  for(let i=0;i<count;i++){
-    const frac = (count===1) ? 0.5 : (i/(count-1));
-    const angle = fanCenterAngle - spread/2 + frac*spread;
-    const x = center.x + Math.cos(angle)*radius;
-    const y = center.y + Math.sin(angle)*radius;
-    const accent = mainNode.accent;
-    const node = el('button',{
-      class:'bubble sub',
-      'data-id': mainNode.data.id + '::' + sublist[i].id,
-      'aria-label': sublist[i].name,
-      tabindex:0,
-      style: `--accent:${accent}; --sub-bg:${hexToRGBA(accent,0.2)}; --sub-border:${hexToRGBA(accent,0.3)};`
+function renderSubs(main){
+  const subs = main.data.subgenres||[];
+  if(!subs.length) return;
+  const spread = Math.PI*1.6, radius=150;
+  const baseIdx = GENRE_DATA.findIndex(g=>g.id===main.data.id);
+  const mainAngle = (baseIdx/GENRE_DATA.length)*Math.PI*2 - Math.PI/2;
+  subs.forEach((s,i)=>{
+    const frac = subs.length===1?0.5:i/(subs.length-1);
+    const a = mainAngle - spread/2 + frac*spread;
+    const x = main.x + Math.cos(a)*radius;
+    const y = main.y + Math.sin(a)*radius;
+    const btn = el('button',{
+      class:'bubble sub','data-id':`${main.data.id}::${s.id}`,'aria-label':s.name,tabindex:0,
+      style:`--accent:${main.accent};--sub-bg:${hexToRGBA(main.accent,0.2)};--sub-border:${hexToRGBA(main.accent,0.3)};`
     });
-    node.innerHTML = `<div style="padding:4px;font-size:11.5px;line-height:1.2;">${sublist[i].name}</div>`;
-    node.style.left = x + 'px';
-    node.style.top = y + 'px';
-    bubblesContainer.appendChild(node);
-    drawLine({x:center.x, y:center.y}, {x,y}, {stroke:hexToRGBA(accent,0.3), width:1.6});
-    node.addEventListener('click', (e) => { e.stopPropagation(); onSubClick(mainNode.data, sublist[i]); });
-    node.addEventListener('keydown', (ev)=> { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onSubClick(mainNode.data, sublist[i]); }});
-  }
+    btn.innerHTML=`<div style="padding:4px;font-size:11.5px;line-height:1.2;">${s.name}</div>`;
+    btn.style.left=x+'px'; btn.style.top=y+'px';
+    bubbles.appendChild(btn);
+    line({x:main.x,y:main.y},{x,y},{stroke:hexToRGBA(main.accent,0.3),width:1.6});
+    btn.onclick = e=>{e.stopPropagation(); onSub(main.data,s);};
+    btn.onkeydown = ev=>{if(ev.key==='Enter'||ev.key===' ') {ev.preventDefault(); onSub(main.data,s);}};
+  });
 }
-
-function renderGameNodes(mainNode){
-  const games = (mainNode.data.games || []).slice(0,10);
-  const center = { x: mainNode.x, y: mainNode.y };
-  const baseRadius = 240;
-  const count = games.length;
-  if(count===0) return;
-  for(let i=0;i<count;i++){
-    const angle = (i/count) * Math.PI*2 - Math.PI/2 + 0.18 * Math.sin(i);
-    const x = center.x + Math.cos(angle)*(baseRadius + 30 * Math.sin(i*0.7));
-    const y = center.y + Math.sin(angle)*(baseRadius + 10 * Math.cos(i*0.6));
-    const node = el('button', { class:'game-node', 'data-game': games[i], tabindex:0, title: games[i]});
-    node.textContent = games[i].split(' (')[0];
-    node.style.left = (x - 70) + 'px';
-    node.style.top = (y - 16) + 'px';
-    bubblesContainer.appendChild(node);
-    drawLine(center, {x:x, y:y}, {stroke:'rgba(255,255,255,0.06)', width:1, opacity:0.7});
-    node.addEventListener('click', (e) => { e.stopPropagation(); openPanelFor(mainNode.data, {title: games[i], extra: `Representative title for ${mainNode.data.name}`}); });
-  }
+function renderGames(main){
+  const games = (main.data.games||[]).slice(0,10);
+  const r = 240;
+  games.forEach((g,i)=>{
+    const a = (i/games.length)*Math.PI*2 - Math.PI/2 + 0.18*Math.sin(i);
+    const x = main.x + Math.cos(a)*(r + 30*Math.sin(i*0.7));
+    const y = main.y + Math.sin(a)*(r + 10*Math.cos(i*0.6));
+    const btn = el('button',{class:'game-node','data-game':g,tabindex:0,title:g});
+    btn.textContent = g.split(' (')[0];
+    btn.style.left=(x-70)+'px'; btn.style.top=(y-16)+'px';
+    bubbles.appendChild(btn);
+    line({x:main.x,y:main.y},{x,y},{stroke:'rgba(255,255,255,0.06)',width:1,opacity:0.7});
+    btn.onclick = e=>{e.stopPropagation(); openPanel(main.data,{title:g,extra:`Representative title for ${main.data.name}`});};
+  });
 }
-
-function onSubClick(mainGenreData, subData){
-  activeSubId = subData.id;
-  const subs = bubblesContainer.querySelectorAll('.sub');
-  subs.forEach(s => s.classList.toggle('fade-out', s.getAttribute('data-id') !== mainGenreData.id + '::' + subData.id));
-  const toRemove = [...bubblesContainer.querySelectorAll('.game-node')];
-  toRemove.forEach(n=> n.remove());
-  svg.innerHTML = ''; svg.appendChild(defs);
-  const mainNode = nodes[mainGenreData.id];
-  const subEl = bubblesContainer.querySelector(`[data-id="${mainGenreData.id}::${subData.id}"]`);
-  if(!subEl) return;
+function onSub(mainData,subData){
+  activeSub = subData.id;
+  document.querySelectorAll('.sub').forEach(s=>s.classList.toggle('fade-out',s.dataset.id!==`${mainData.id}::${subData.id}`));
+  document.querySelectorAll('.game-node').forEach(e=>e.remove());
+  svg.innerHTML=''; svg.appendChild(defs);
+  const mainNode = nodes[mainData.id];
+  const subEl = bubbles.querySelector(`[data-id="${mainData.id}::${subData.id}"]`);
   const rect = subEl.getBoundingClientRect();
-  const hubRectOb = hub.getBoundingClientRect();
-  const subCenter = {
-    x: rect.left - hubRectOb.left + rect.width/2,
-    y: rect.top - hubRectOb.top + rect.height/2
-  };
-  drawLine({x: mainNode.x, y: mainNode.y}, subCenter, {stroke:mainNode.accent, width:1.8});
-  const games = subData.games || [];
-  const baseRadius = 130;
-  for(let i=0;i<games.length;i++){
-    const angle = (i/(games.length||1)) * Math.PI*2 - Math.PI/2;
-    const x = subCenter.x + Math.cos(angle)*(baseRadius + (i%2?10:-10));
-    const y = subCenter.y + Math.sin(angle)*(baseRadius + (i%2?8:-8));
-    const node = el('button', { class:'game-node', 'data-game': games[i], tabindex:0, title: games[i]});
-    node.textContent = games[i].split(' (')[0];
-    node.style.left = (x - 70) + 'px';
-    node.style.top = (y - 16) + 'px';
-    bubblesContainer.appendChild(node);
-    drawLine(subCenter,{x,y},{stroke:'rgba(255,255,255,0.04)', width:0.9, opacity:0.6});
-    node.addEventListener('click', (e) => { e.stopPropagation(); openPanelFor(mainGenreData, {title: games[i], extra: `From ${subData.name}`}); });
-  }
-  openPanelFor(mainGenreData, { sub: subData });
+  const hubR = hub.getBoundingClientRect();
+  const subC = {x:rect.left-hubR.left+rect.width/2, y:rect.top-hubR.top+rect.height/2};
+  line({x:mainNode.x,y:mainNode.y},subC,{stroke:mainNode.accent,width:1.8});
+  const games = subData.games||[];
+  const r = 130;
+  games.forEach((g,i)=>{
+    const a = (i/(games.length||1))*Math.PI*2 - Math.PI/2;
+    const x = subC.x + Math.cos(a)*(r + (i%2?10:-10));
+    const y = subC.y + Math.sin(a)*(r + (i%2?8:-8));
+    const btn = el('button',{class:'game-node','data-game':g,tabindex:0,title:g});
+    btn.textContent = g.split(' (')[0];
+    btn.style.left=(x-70)+'px'; btn.style.top=(y-16)+'px';
+    bubbles.appendChild(btn);
+    line(subC,{x,y},{stroke:'rgba(255,255,255,0.04)',width:0.9,opacity:0.6});
+    btn.onclick = e=>{e.stopPropagation(); openPanel(mainData,{title:g,extra:`From ${subData.name}`});};
+  });
+  openPanel(mainData,{sub:subData});
 }
 
-function openPanelFor(mainData, opts = {}){
-  panel.classList.add('open');
-  panel.setAttribute('aria-hidden','false');
+/* ---------- PANEL ---------- */
+function openPanel(data,opts={}){
+  panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
   if(opts.title){
     panelTitle.textContent = opts.title.split(' (')[0];
-    const year = opts.title.match(/\((\d{4})\)/);
-    panelMeta.textContent = `${mainData.name} — ${year ? year[1] : ''}`;
-    panelDesc.textContent = opts.title.includes('—') ? opts.title.split('— ')[1] : (opts.extra || `A notable title.`);
-    panelGames.innerHTML = '';
-    const backBtn = el('button', { style:'margin-bottom:8px;background:transparent;border:0;color:var(--accent);cursor:pointer;font-weight:600;' }, 'Back to genre');
-    backBtn.addEventListener('click', ()=> openPanelFor(mainData));
-    panelGames.appendChild(backBtn);
+    const yr = opts.title.match(/\((\d{4})\)/);
+    panelMeta.textContent = `${data.name} — ${yr?yr[1]:''}`;
+    panelDesc.textContent = opts.title.includes('—') ? opts.title.split('— ')[1] : (opts.extra||'A notable title.');
+    panelGames.innerHTML='';
+    const back = el('button',{style:'margin-bottom:8px;background:transparent;border:0;color:var(--accent);cursor:pointer;font-weight:600;'},'Back to genre');
+    back.onclick = ()=>openPanel(data);
+    panelGames.appendChild(back);
     return;
   }
   if(opts.sub){
     panelTitle.textContent = opts.sub.name;
-    panelMeta.textContent = `${mainData.name} subgenre`;
-    panelDesc.textContent = opts.sub.desc || 'No description.';
-    panelGames.innerHTML = '';
-    (opts.sub.games || []).forEach(g => {
-      const b = el('button', {}, g.split(' (')[0]);
-      b.addEventListener('click', ()=> openPanelFor(mainData, {title: g, extra: g.includes('—') ? g.split('— ')[1].trim() : ''}));
+    panelMeta.textContent = `${data.name} subgenre`;
+    panelDesc.textContent = opts.sub.desc||'No description.';
+    panelGames.innerHTML='';
+    (opts.sub.games||[]).forEach(g=>{
+      const b = el('button',{},g.split(' (')[0]);
+      b.onclick = ()=>openPanel(data,{title:g,extra:g.includes('—')?g.split('— ')[1].trim():''});
       panelGames.appendChild(b);
     });
     return;
   }
-  panelTitle.textContent = mainData.name;
+  panelTitle.textContent = data.name;
   panelMeta.textContent = 'Main genre';
-  panelDesc.textContent = mainData.desc || 'Description not set.';
-  panelGames.innerHTML = '';
-  (mainData.games || []).slice(0,12).forEach(g => {
-    const b = el('button', {}, g.split(' (')[0]);
-    b.addEventListener('click', ()=> openPanelFor(mainData, { title: g, extra: g.includes('—') ? g.split('— ')[1].trim() : `From ${mainData.name}`}));
+  panelDesc.textContent = data.desc||'Description not set.';
+  panelGames.innerHTML='';
+  (data.games||[]).slice(0,12).forEach(g=>{
+    const b = el('button',{},g.split(' (')[0]);
+    b.onclick = ()=>openPanel(data,{title:g,extra:g.includes('—')?g.split('— ')[1].trim():`From ${data.name}`});
     panelGames.appendChild(b);
   });
 }
-
 function closePanel(){
-  panel.classList.remove('open');
-  panel.setAttribute('aria-hidden','true');
-  panelTitle.textContent = 'Welcome';
-  panelMeta.textContent = 'Interactive encyclopedia';
-  panelDesc.textContent = 'Click any bubble to explore genres and games.';
-  panelGames.innerHTML = '';
+  panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
+  panelTitle.textContent='Welcome'; panelMeta.textContent='Interactive encyclopedia';
+  panelDesc.textContent='Click any bubble to explore genres and games.'; panelGames.innerHTML='';
 }
-panelClose.addEventListener('click', closePanel);
+panelClose.onclick = closePanel;
 
-document.addEventListener('click', (ev)=>{
-  const isBubble = ev.target.closest('.bubble, .game-node, .panel, .topbar');
-  if(!isBubble) closeSubgenres();
+/* ---------- GLOBAL CLICKS / ESC ---------- */
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.bubble,.game-node,.panel,.topbar')) closeAll();
 });
-document.addEventListener('keydown', (ev)=>{
-  if(ev.key === 'Escape') closeSubgenres();
-});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeAll(); });
 
-let resizeTimer;
-window.addEventListener('resize', ()=> {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(layoutMainBubbles, 120);
-});
+/* ---------- RESIZE ---------- */
+let rt; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(layoutMain,120); });
 
-layoutMainBubbles();
+/* ---------- START ---------- */
+layoutMain();
 
-const srHint = el('div',{style:'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;'}, 'Use tab/arrow keys to navigate. Press Enter or Space to expand.');
-document.body.appendChild(srHint);
+/* screen-reader hint */
+document.body.appendChild(el('div',{style:'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;'},
+  'GameMap: Use tab/arrow keys to navigate bubbles. Press Enter or Space to expand.'));
 </script>
 </body>
 </html>
