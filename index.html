@@ -32,17 +32,15 @@
     position:absolute;inset:0;pointer-events:none;
     z-index:1;                     /* lines behind bubbles */
   }
-.hub {
+  .hub{
+    position:relative;width:min(1200px,92%);height:min(800px,86vh);
+    max-width:1600px;border-radius:16px;
+    background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);
+    box-shadow:0 8px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.02);
+    overflow:visible;              /* allow sub-genres to escape the hub */
+    z-index:2;
     margin-left: 260px;           /* make space for the left panel */
     width: calc(min(1200px, 92%) - 260px);
-    height: min(800px, 86vh);
-    max-width: 1600px;
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    overflow: visible;
-    z-index: 2;
-    position: relative;
   }
   .bubbles{
     position:absolute;inset:0;pointer-events:auto;
@@ -98,7 +96,7 @@
     opacity:0.3;transform:translate(-50%,-50%) scale(0.94);filter:blur(0.5px);
   }
   .topbar{
-    position:absolute;left:22px;top:14px;display:flex;align-items:center;
+    position:absolute;left:280px;top:14px;display:flex;align-items:center;
     gap:12px;z-index:30;
   }
   .brand{
@@ -148,12 +146,6 @@
     padding:9px 12px;border-radius:12px;background:rgba(255,255,255,0.03);
     border:1px solid rgba(255,255,255,0.05);font-weight:500;
   }
-  @media (max-width:800px){
-    .panel{position:fixed;right:0;top:0;bottom:0;width:86vw;padding:18px;}
-    .hub{height:100vh;border-radius:0;}
-    .topbar{left:12px;top:8px;}
-    .games-left{width:80vw;left:10px;top:100px;bottom:auto;max-height:60vh;transform:translateX(-110%);}
-  }
   .bubble:hover{
     transform:translate(-50%,-50%) scale(1.08);
     box-shadow:0 14px 36px rgba(0,0,0,0.75),0 0 0 3px var(--accent,rgba(107,230,193,0.25));
@@ -170,7 +162,7 @@
     border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);
     z-index:9999;opacity:0.7;transition:opacity .3s ease;mix-blend-mode:screen;
   }
-.games-left {
+  .games-left {
     position: fixed;              /* now fixed to viewport */
     left: 0;
     top: 0;
@@ -189,54 +181,118 @@
     overflow: auto;
     color: #cfe8e0;
   }
-
   .games-left.open {
     transform: translateX(0);
   }
-
   .games-left h3 {
     margin: 0;
     font-size: 18px;
     font-weight: 700;
     color: #fff;
   }
-
   .games-left-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  /* Keep topbar above the left panel */
-  .topbar {
-    left: 280px;                  /* shift right to avoid overlap */
-    z-index: 30;
-  }
-
-  @media (max-width: 900px) {
+  /* === BETTER MOBILE DESIGN === */
+  @media (max-width: 768px) {
+    .app {
+      flex-direction: column; /* stack elements vertically */
+      overflow-y: auto;
+    }
     .hub {
       margin-left: 0;
       width: 100%;
-      height: 100vh;
+      height: auto; /* flexible height */
+      min-height: 60vh;
       border-radius: 0;
+      overflow: visible;
+      padding: 20px 0;
+      box-shadow: none;
+    }
+    .bubbles {
+      position: relative;
+      height: 60vh; /* scrollable map on mobile */
+      overflow: auto;
+      touch-action: pan-y; /* enable touch scrolling */
+    }
+    .bubble {
+      font-size: 13px; /* smaller text for mobile */
+      padding: 10px 12px;
+      min-width: 60px;
+    }
+    .main {
+      width: 100px;
+      height: 100px;
+      font-size: 14px;
+    }
+    .sub {
+      width: 60px;
+      height: 60px;
+      font-size: 10px;
+    }
+    .topbar {
+      left: 16px;
+      top: 8px;
+      z-index: 100;
+      background: rgba(0,0,0,0.8); /* semi-transparent bar for visibility */
+      padding: 8px 12px;
+      border-radius: 20px;
+      width: calc(100% - 32px);
+      justify-content: center;
+    }
+    .panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 50vh;
+      transform: translateY(100%);
+      border-top: 1px solid rgba(255,255,255,0.03);
+      border-left: none;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.7);
+      padding: 16px;
+      overflow: auto;
+    }
+    .panel.open {
+      transform: translateY(0);
     }
     .games-left {
+      position: fixed;
+      bottom: 50vh;
+      left: 0;
+      right: 0;
       width: 100%;
-      height: 60vh;
+      height: 50vh;
       top: auto;
-      bottom: 0;
       transform: translateY(100%);
+      border-top: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.7);
+      padding: 16px;
     }
     .games-left.open {
       transform: translateY(0);
     }
-    .topbar {
-      left: 12px;
+    .hint {
+      position: fixed;
+      bottom: 8px;
+      right: 16px;
+      left: 16px;
+      text-align: center;
+      z-index: 100;
+      background: rgba(0,0,0,0.8);
+      padding: 8px;
+      border-radius: 12px;
+    }
+    /* Adjust bubble layout for smaller screen */
+    :root {
+      --main-bubble-size: 100px;
+      --sub-bubble-size: 60px;
     }
   }
-  .games-left.open{transform:translateX(0);}
-  .games-left h3{margin:0;font-size:18px;font-weight:700;color:#fff;}
-  .games-left-list{display:flex;flex-direction:column;gap:10px;}
 </style>
 </head>
 <body>
@@ -244,9 +300,9 @@
   <div class="map">
     <div class="hub" id="hub" aria-hidden="false">
       <div class="topbar">
-        <div class="brand" title="GameMap — An Interactive Encyclopedia of Game Genres">
+        <div class="brand" title="GameMap">
           <span class="dot" aria-hidden="true"></span>
-          GameMap — An Interactive Encyclopedia of Game Genres
+          GameMap
         </div>
       </div>
       <svg class="lines" id="svg-lines" aria-hidden="true"></svg>
@@ -1343,8 +1399,3 @@ document.body.appendChild(el('div',{style:'position:absolute;left:-9999px;top:au
 </script>
 </body>
 </html>
-
-
-
-
-
